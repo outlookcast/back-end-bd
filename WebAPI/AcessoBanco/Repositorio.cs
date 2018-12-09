@@ -151,5 +151,37 @@ namespace WebAPI.AcessoBanco
                 return 1 == (await conexao.ExecuteAsync(query, professor));
             }
         }
+
+        public async Task<bool> CriarAluno(Aluno aluno)
+        {
+            using (var conexao = new NpgsqlConnection(_connectionString))
+            {
+                string query = @"INSERT INTO trabalho_bd_vsampaio.aluno (
+                                    id_aluno,
+                                    matricula,
+                                    nome_aluno,
+                                    cpf,
+                                    curso)
+                                VALUES (
+                                    @Id,
+                                    @Matricula,
+                                    @Nome,
+                                    @CPF,
+                                    @Curso);";
+                return 1 == (await conexao.ExecuteAsync(query, aluno));
+            }
+        }
+
+        public async Task<IEnumerable<string>> GetTodosNomesDosDepartamentos()
+        {
+            using (var conexao = new NpgsqlConnection(_connectionString))
+            {
+                string query = @"SELECT
+                                    nome_departamento
+                                FROM
+                                    trabalho_bd_vsampaio.departamento;";
+                return await conexao.QueryAsync<string>(query);
+            }
+        }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.AcessoBanco;
+using WebAPI.Modelos;
 
 namespace WebAPI.Controllers
 {
@@ -25,6 +26,20 @@ namespace WebAPI.Controllers
                 return Ok(await _repositorio.GetTodosAlunos());
             }
             catch(Exception e)
+            {
+                Console.WriteLine($"Error => {e.Message}");
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CriarAluno([FromBody]Aluno aluno)
+        {
+            try
+            {
+                return Ok(await _repositorio.CriarAluno(aluno));
+            }
+            catch (Exception e)
             {
                 Console.WriteLine($"Error => {e.Message}");
                 return BadRequest(e.Message);

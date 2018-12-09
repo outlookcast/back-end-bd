@@ -45,5 +45,20 @@ namespace WebAPI.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [HttpGet]
+        [Route("departamento")]
+        public async Task<IActionResult> GetNomeDosDepartamentos()
+        {
+            try
+            {
+                return Ok(await _repositorio.GetTodosNomesDosDepartamentos());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error => {e.Message}");
+                return BadRequest(e.Message);
+            }
+        }
     }
 }

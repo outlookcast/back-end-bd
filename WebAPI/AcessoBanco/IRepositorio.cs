@@ -14,5 +14,7 @@ namespace WebAPI.AcessoBanco
         Task<bool> CriarSemestre(Semestre semestre);
         Task<IEnumerable<Professor>> GetTodosProfessores();
         Task<bool> CriarProfessor(Professor professor);
+        Task<bool> CriarAluno(Aluno aluno);
+        Task<IEnumerable<string>> GetTodosNomesDosDepartamentos();
     }
 }
