@@ -9,5 +9,10 @@ namespace WebAPI.AcessoBanco
     {
         Task<IEnumerable<Aluno>> GetTodosAlunos();
         Task<IEnumerable<Disciplina>> GetTodasDisciplinas();
+        Task<IEnumerable<Semestre>> GetTodosSemestres();
+        Task<bool> DeletarSemestrePeloId(int id);
+        Task<bool> CriarSemestre(Semestre semestre);
+        Task<IEnumerable<Professor>> GetTodosProfessores();
+        Task<bool> CriarProfessor(Professor professor);
     }
 }

@@ -8,7 +8,7 @@ using Npgsql;
 using Dapper;
 namespace WebAPI.AcessoBanco
 {
-    public class Repositorio: IRepositorio
+    public class Repositorio : IRepositorio
     {
         private readonly string _connectionString;
         private readonly IConfiguration _config;
@@ -31,7 +31,7 @@ namespace WebAPI.AcessoBanco
                                     (SELECT dd.nome_departamento FROM trabalho_bd_vsampaio.departamento dd WHERE d.id_departamento = dd.id_departamento) AS Departamento
                                 FROM
                                     trabalho_bd_vsampaio.disciplina d;";
-                var disciplinas =  await conexao.QueryAsync<Disciplina>(query);
+                var disciplinas = await conexao.QueryAsync<Disciplina>(query);
                 string queryEmTurmas = @"SELECT
                                             t.id_turma AS Id,
                                             t.letra AS Letra,
@@ -69,5 +69,87 @@ namespace WebAPI.AcessoBanco
             }
         }
 
+        public async Task<IEnumerable<Semestre>> GetTodosSemestres()
+        {
+            using (var conexao = new NpgsqlConnection(_connectionString))
+            {
+                string query = @"SELECT
+                                    id_semestre AS Id,
+                                    nome_semestre AS Nome,
+                                    data_inicial AS DataInicial,
+                                    data_final AS DataFinal
+                                FROM
+                                    trabalho_bd_vsampaio.semestre;";
+                return await conexao.QueryAsync<Semestre>(query);
+            }
+        }
+
+        public async Task<bool> DeletarSemestrePeloId(int id)
+        {
+            //TODO: Deletar referência em todas as outras tabelas antes...
+            using (var conexao = new NpgsqlConnection(_connectionString))
+            {
+                string query = @"DELETE
+                                FROM
+                                    trabalho_bd_vsampaio.semestre s
+                                WHERE
+                                    s.id_semestre = @id";
+                return 1 == (await conexao.ExecuteAsync(query, new { id }));
+            }
+        }
+
+        public async Task<bool> CriarSemestre(Semestre semestre)
+        {
+            using (var conexao = new NpgsqlConnection(_connectionString))
+            {
+                string query = @"INSERT INTO trabalho_bd_vsampaio.semestre (
+                                    id_semestre,
+                                    nome_semestre,
+                                    data_inicial,
+                                    data_final)
+                                VALUES (
+                                    @Id,
+                                    @Nome,
+                                    @DataInicial,
+                                    @DataFinal);";
+                return 1 == (await conexao.ExecuteAsync(query, new { semestre.Id, semestre.Nome, semestre.DataInicial, semestre.DataFinal }));
+            }
+        }
+
+        public async Task<IEnumerable<Professor>> GetTodosProfessores()
+        {
+            using (var conexao = new NpgsqlConnection(_connectionString))
+            {
+                string query = @"SELECT
+                                    id_professor AS Id,
+                                    nome_professor AS Nome,
+                                    cpf AS CPF,
+                                    siape AS Siape,
+                                    (SELECT nome_departamento FROM trabalho_bd_vsampaio.departamento d WHERE d.id_departamento = p.id_departamento) AS Departamento
+                                FROM
+                                    trabalho_bd_vsampaio.professor p;";
+                return await conexao.QueryAsync<Professor>(query);
+            }
+        }
+
+        public async Task<bool> CriarProfessor(Professor professor)
+        {
+            using (var conexao = new NpgsqlConnection(_connectionString))
+            {
+                string query = @"INSERT INTO trabalho_bd_vsampaio.professor (
+                                    id_professor,
+                                    nome_professor,
+                                    siape,
+                                    cpf,
+                                    id_departamento)
+                                VALUES (
+                                    @Id,
+                                    @Nome,
+                                    @Siape,
+                                    @CPF,
+                                    (SELECT d.id_departamento FROM trabalho_bd_vsampaio.departamento d WHERE d.nome_departamento = @Departamento));";
+                return 1 == (await conexao.ExecuteAsync(query, professor));
+            }
+        }
     }
 }
